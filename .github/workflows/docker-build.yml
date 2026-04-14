@@ -98,7 +98,6 @@ jobs:
           script: |
             mkdir -p /docker/volumes/postgres /docker/volumes/letsencrypt /docker/volumes/certbot_webroot
             cd /docker/portfolio
-            echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             IMAGE_TAG=${{ github.sha }} docker compose pull
             IMAGE_TAG=${{ github.sha }} docker compose up -d
             docker image prune -f
