@@ -35,7 +35,10 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
-  cors: [process.env.NEXT_PUBLIC_WEBSITE_URL || 'http://localhost:5173'],
+  cors: [
+    process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+    process.env.NEXT_PUBLIC_WEBSITE_URL || 'http://localhost:5173',
+  ],
   upload: {
     limits: {
       fileSize: 10_000_000, // 10 MB
