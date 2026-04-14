@@ -31,16 +31,14 @@ self_signed() {
 # ── Request a real cert via certbot webroot ─────────────────────────────────
 certbot_issue() {
     local domain="$1"
-    if certbot certificates 2>/dev/null | grep -A2 "Certificate Name: $domain" | grep -q "VALID"; then
-        log "Certificate for $domain is already valid — skipping issuance."
-        return 0
-    fi
     log "Requesting Let's Encrypt certificate for $domain ..."
     certbot certonly --webroot \
         --webroot-path="$WEBROOT" \
         --email "$EMAIL" \
         --agree-tos \
         --no-eff-email \
+        --keep-until-expiring \
+        --non-interactive \
         -d "$domain"
 }
 
