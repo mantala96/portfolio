@@ -34,14 +34,14 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+  serverURL: process.env.CMS_SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
   cors: [
-    process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
-    process.env.NEXT_PUBLIC_WEBSITE_URL || 'http://localhost:5173',
+    process.env.CMS_SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+    process.env.CMS_WEBSITE_URL || process.env.NEXT_PUBLIC_WEBSITE_URL || 'http://localhost:5173',
   ],
   csrf: [
-    process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
-    process.env.NEXT_PUBLIC_WEBSITE_URL || 'http://localhost:5173',
+    process.env.CMS_SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+    process.env.CMS_WEBSITE_URL || process.env.NEXT_PUBLIC_WEBSITE_URL || 'http://localhost:5173',
   ],
   upload: {
     limits: {
