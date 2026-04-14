@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cms_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Init scripts run once when the data directory is first created.
+      # 01-cms-user.sql provisions the dedicated cms_app role.
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  cms:
+    build:
+      context: ./cms
+      target: dev
+    restart: unless-stopped
+    volumes:
+      - ./cms:/app
+      - cms_node_modules:/app/node_modules
+      - cms_next:/app/.next
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://cms_app:cms_app_secret@postgres:5432/cms_db
+      PAYLOAD_SECRET: dev-secret-change-in-production
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
+      NEXT_PUBLIC_WEBSITE_URL: http://localhost:5173
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  website:
+    build:
+      context: ./website
+      target: dev
+    restart: unless-stopped
+    volumes:
+      - ./website:/app
+      - website_node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_CMS_URL: http://localhost:3000
+    depends_on:
+      - cms
+
+volumes:
+  postgres_data:
+  cms_node_modules:
+  cms_next:
+  website_node_modules:
