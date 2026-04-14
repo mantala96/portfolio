@@ -21,6 +21,10 @@ ARG NEXT_PUBLIC_SERVER_URL
 ARG NEXT_PUBLIC_WEBSITE_URL
 ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
 ENV NEXT_PUBLIC_WEBSITE_URL=$NEXT_PUBLIC_WEBSITE_URL
+# Dummy values satisfy fail-fast checks at build time; real values are injected at runtime
+ENV PAYLOAD_SECRET=build-placeholder
+ENV DATABASE_URL=postgresql://build:build@localhost:5432/build
+ENV CMS_SERVER_URL=https://build.placeholder.local
 RUN npm run build
 
 # ---- production ----
