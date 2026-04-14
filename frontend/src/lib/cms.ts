@@ -1,4 +1,36 @@
 const CMS_URL = import.meta.env.VITE_CMS_URL || 'http://localhost:3000'
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+// ─── Cache ────────────────────────────────────────────────────
+
+function readCache<T>(key: string): T | null {
+  try {
+    const raw = localStorage.getItem(key)
+    if (!raw) return null
+    const { data, ts } = JSON.parse(raw)
+    if (Date.now() - ts > CACHE_TTL) return null
+    return data as T
+  } catch {
+    return null
+  }
+}
+
+function writeCache(key: string, data: unknown): void {
+  try {
+    localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() }))
+  } catch {}
+}
+
+async function fetchWithCache<T>(key: string, fetcher: () => Promise<T>): Promise<T> {
+  const cached = readCache<T>(key)
+  if (cached !== null) {
+    fetcher().then(fresh => writeCache(key, fresh)).catch(() => {})
+    return cached
+  }
+  const data = await fetcher()
+  writeCache(key, data)
+  return data
+}
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -67,46 +99,54 @@ export interface Experience {
 
 // ─── Fetch helpers ────────────────────────────────────────────
 
-export async function fetchPersonalInfo(): Promise<PersonalInfo | null> {
-  try {
-    const res = await fetch(`${CMS_URL}/api/globals/personal-info`)
-    if (!res.ok) return null
-    return await res.json()
-  } catch {
-    return null
-  }
+export function fetchPersonalInfo(): Promise<PersonalInfo | null> {
+  return fetchWithCache('cms:personal-info', async () => {
+    try {
+      const res = await fetch(`${CMS_URL}/api/globals/personal-info`)
+      if (!res.ok) return null
+      return await res.json()
+    } catch {
+      return null
+    }
+  })
 }
 
-export async function fetchSkills(): Promise<Skills | null> {
-  try {
-    const res = await fetch(`${CMS_URL}/api/globals/skills`)
-    if (!res.ok) return null
-    return await res.json()
-  } catch {
-    return null
-  }
+export function fetchSkills(): Promise<Skills | null> {
+  return fetchWithCache('cms:skills', async () => {
+    try {
+      const res = await fetch(`${CMS_URL}/api/globals/skills`)
+      if (!res.ok) return null
+      return await res.json()
+    } catch {
+      return null
+    }
+  })
 }
 
-export async function fetchProjects(): Promise<Project[]> {
-  try {
-    const res = await fetch(`${CMS_URL}/api/projects?sort=order&limit=100`)
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.docs ?? []
-  } catch {
-    return []
-  }
+export function fetchProjects(): Promise<Project[]> {
+  return fetchWithCache('cms:projects', async () => {
+    try {
+      const res = await fetch(`${CMS_URL}/api/projects?sort=order&limit=100`)
+      if (!res.ok) return []
+      const data = await res.json()
+      return data.docs ?? []
+    } catch {
+      return []
+    }
+  })
 }
 
-export async function fetchExperience(): Promise<Experience[]> {
-  try {
-    const res = await fetch(`${CMS_URL}/api/experience?sort=order&limit=100`)
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.docs ?? []
-  } catch {
-    return []
-  }
+export function fetchExperience(): Promise<Experience[]> {
+  return fetchWithCache('cms:experience', async () => {
+    try {
+      const res = await fetch(`${CMS_URL}/api/experience?sort=order&limit=100`)
+      if (!res.ok) return []
+      const data = await res.json()
+      return data.docs ?? []
+    } catch {
+      return []
+    }
+  })
 }
 
 export async function fetchPageBySlug(slug: string): Promise<Page | null> {
