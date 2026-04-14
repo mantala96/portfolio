@@ -48,6 +48,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            NEXT_PUBLIC_SERVER_URL=${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+            NEXT_PUBLIC_WEBSITE_URL=${{ secrets.NEXT_PUBLIC_WEBSITE_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -90,6 +93,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            VITE_CMS_URL=${{ vars.VITE_CMS_URL }}
+            VITE_CMS_URL=${{ secrets.VITE_CMS_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
