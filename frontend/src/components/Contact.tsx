@@ -12,7 +12,7 @@ export default function Contact({ info }: { info: PersonalInfo | null }) {
       <p className="section-label">Pojďme se spojit</p>
       <h2 className="section-title">Napište mi</h2>
         <p className="section-sub">
-          Máte v hlavě projekt nebo zajímavou příležitost? Rád o vás uslyším.
+          Máte v hlavě projekt nebo zajímavou příležitost? Rád o Vás uslyším.
         </p>
 
         <div className="contact-inner">

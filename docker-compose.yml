@@ -32,8 +32,6 @@ services:
     environment:
       DATABASE_URL: postgresql://cms_app:${POSTGRES_PASSWORD}@postgres:5432/cms_db
       PAYLOAD_SECRET: ${PAYLOAD_SECRET}
-      NEXT_PUBLIC_SERVER_URL: ${CMS_URL}
-      NEXT_PUBLIC_WEBSITE_URL: ${WEBSITE_URL}
       CMS_SERVER_URL: ${CMS_URL}
       CMS_WEBSITE_URL: ${WEBSITE_URL}
       PORT: 3000
