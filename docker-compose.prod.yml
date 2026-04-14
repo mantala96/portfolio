@@ -10,12 +10,18 @@ services:
       LANG: cs_CZ.UTF-8
       LC_ALL: cs_CZ.UTF-8
     volumes:
-      - /docker/volumes/postgres:/var/lib/postgresql/data
+      - /docker/volumes/postgres:/var/lib/postgresql/18/docker
+      - ./postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    command: postgres -c hba_file=/etc/postgresql/pg_hba.conf
+    ports:
+      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U cms_app -d cms_db"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - portfolio
 
   cms:
     image: ghcr.io/${GITHUB_USERNAME}/portfolio-cms:${IMAGE_TAG:-latest}
@@ -30,12 +36,16 @@ services:
       NEXT_PUBLIC_WEBSITE_URL: ${WEBSITE_URL}
       PORT: 3000
       HOSTNAME: "0.0.0.0"
+    networks:
+      - portfolio
 
   frontend:
     image: ghcr.io/${GITHUB_USERNAME}/portfolio-frontend:${IMAGE_TAG:-latest}
     restart: unless-stopped
     depends_on:
       - cms
+    networks:
+      - portfolio
 
   nginx:
     image: ghcr.io/${GITHUB_USERNAME}/portfolio-nginx:${IMAGE_TAG:-latest}
@@ -53,3 +63,9 @@ services:
     volumes:
       - /docker/volumes/letsencrypt:/etc/letsencrypt
       - /docker/volumes/certbot_webroot:/var/www/certbot
+    networks:
+      - portfolio
+
+networks:
+  portfolio:
+    driver: bridge

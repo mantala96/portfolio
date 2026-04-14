@@ -60,7 +60,7 @@ jobs:
             ghcr.io/${{ env.OWNER }}/portfolio-frontend:latest
             ghcr.io/${{ env.OWNER }}/portfolio-frontend:${{ github.sha }}
           build-args: |
-            VITE_CMS_URL=${{ vars.CMS_URL }}
+            VITE_CMS_URL=${{ secrets.CMS_URL }}
 
   build-nginx:
     name: Build & push nginx

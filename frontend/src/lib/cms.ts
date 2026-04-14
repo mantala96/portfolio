@@ -71,7 +71,7 @@ export async function fetchPersonalInfo(): Promise<PersonalInfo | null> {
   try {
     const res = await fetch(`${CMS_URL}/api/globals/personal-info`)
     if (!res.ok) return null
-    return res.json()
+    return await res.json()
   } catch {
     return null
   }
@@ -81,7 +81,7 @@ export async function fetchSkills(): Promise<Skills | null> {
   try {
     const res = await fetch(`${CMS_URL}/api/globals/skills`)
     if (!res.ok) return null
-    return res.json()
+    return await res.json()
   } catch {
     return null
   }
