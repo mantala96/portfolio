@@ -31,6 +31,11 @@ self_signed() {
 # ── Request a real cert via certbot webroot ─────────────────────────────────
 certbot_issue() {
     local domain="$1"
+    # Remove self-signed cert so certbot uses the correct directory name.
+    # If a real cert already exists (renewal config present), leave it alone.
+    if [ ! -f "/etc/letsencrypt/renewal/$domain.conf" ]; then
+        rm -rf "$LE_DIR/$domain"
+    fi
     log "Requesting Let's Encrypt certificate for $domain ..."
     certbot certonly --webroot \
         --webroot-path="$WEBROOT" \
